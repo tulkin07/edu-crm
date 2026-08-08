@@ -3,7 +3,7 @@ import cors from 'cors';
 import helmet from 'helmet';
 import swaggerUi from 'swagger-ui-express';
 import { config } from './config/index.js';
-import { swaggerSpec } from './docs/swagger.js';
+import { getSwaggerSpec } from './docs/swagger.js';
 import { errorHandler, notFound } from './middlewares/errorHandler.js';
 import authRoutes from './routes/authRoutes.js';
 import studentRoutes from './routes/studentRoutes.js';
@@ -14,11 +14,14 @@ import dashboardRoutes from './routes/dashboardRoutes.js';
 
 const app = express();
 
+app.set('trust proxy', 1);
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(cors({ origin: config.frontendUrl, credentials: true }));
 app.use(express.json());
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api-docs', swaggerUi.serve, (req, res, next) => {
+  swaggerUi.setup(getSwaggerSpec(req))(req, res, next);
+});
 
 app.get('/api/health', (req, res) => {
   res.json({ success: true, message: 'API is running' });

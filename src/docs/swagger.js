@@ -9,7 +9,7 @@ const options = {
       version: '1.0.0',
       description: 'REST API for Education Center CRM with JWT authentication and role-based access control',
     },
-    servers: [{ url: `http://localhost:${config.port}`, description: 'Development server' }],
+    servers: [{ url: config.apiUrl || `http://localhost:${config.port}`, description: 'API server' }],
     components: {
       securitySchemes: {
         bearerAuth: {
@@ -95,4 +95,17 @@ const options = {
   apis: ['./src/docs/swaggerDocs.js'],
 };
 
-export const swaggerSpec = swaggerJsdoc(options);
+const baseSpec = swaggerJsdoc(options);
+
+export const getSwaggerSpec = (req) => {
+  const protocol = req.protocol;
+  const host = req.get('host');
+  const serverUrl = host ? `${protocol}://${host}` : baseSpec.servers?.[0]?.url;
+
+  return {
+    ...baseSpec,
+    servers: [{ url: serverUrl, description: 'Current server' }],
+  };
+};
+
+export const swaggerSpec = baseSpec;
