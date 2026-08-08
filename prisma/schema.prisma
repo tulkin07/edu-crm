@@ -1,0 +1,148 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  RECEPTION
+  TEACHER
+  STUDENT
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum StudentLevel {
+  BEGINNER
+  ELEMENTARY
+  INTERMEDIATE
+  UPPER_INTERMEDIATE
+  ADVANCED
+}
+
+enum StudentStatus {
+  ACTIVE
+  INACTIVE
+  GRADUATED
+}
+
+enum TeacherStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum DirectionStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum GroupStatus {
+  ACTIVE
+  INACTIVE
+  COMPLETED
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  username  String   @unique
+  password  String
+  role      Role
+  studentId Int?     @unique
+  teacherId Int?     @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  student Student? @relation(fields: [studentId], references: [id], onDelete: SetNull)
+  teacher Teacher? @relation(fields: [teacherId], references: [id], onDelete: SetNull)
+}
+
+model Direction {
+  id          Int             @id @default(autoincrement())
+  name        String          @unique
+  description String?
+  status      DirectionStatus @default(ACTIVE)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  students Student[]
+  teachers Teacher[]
+  groups   Group[]
+}
+
+model Student {
+  id          Int           @id @default(autoincrement())
+  fullName    String
+  phone       String
+  birthDate   DateTime
+  gender      Gender
+  directionId Int
+  level       StudentLevel
+  status      StudentStatus @default(ACTIVE)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  direction Direction      @relation(fields: [directionId], references: [id])
+  user      User?
+  groups    GroupStudent[]
+}
+
+model Teacher {
+  id          Int           @id @default(autoincrement())
+  fullName    String
+  phone       String
+  directionId Int
+  experience  Int
+  status      TeacherStatus @default(ACTIVE)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  direction Direction @relation(fields: [directionId], references: [id])
+  user      User?
+  groups    Group[]
+}
+
+model Group {
+  id          Int         @id @default(autoincrement())
+  name        String
+  directionId Int
+  teacherId   Int
+  startDate   DateTime
+  lessonDays  DayOfWeek[]
+  startTime   String
+  status      GroupStatus @default(ACTIVE)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  direction Direction      @relation(fields: [directionId], references: [id])
+  teacher   Teacher        @relation(fields: [teacherId], references: [id])
+  students  GroupStudent[]
+}
+
+model GroupStudent {
+  id        Int      @id @default(autoincrement())
+  groupId   Int
+  studentId Int
+  createdAt DateTime @default(now())
+
+  group   Group   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, studentId])
+}

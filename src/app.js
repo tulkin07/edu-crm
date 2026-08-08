@@ -1,0 +1,37 @@
+import express from 'express';
+import cors from 'cors';
+import helmet from 'helmet';
+import swaggerUi from 'swagger-ui-express';
+import { config } from './config/index.js';
+import { swaggerSpec } from './docs/swagger.js';
+import { errorHandler, notFound } from './middlewares/errorHandler.js';
+import authRoutes from './routes/authRoutes.js';
+import studentRoutes from './routes/studentRoutes.js';
+import teacherRoutes from './routes/teacherRoutes.js';
+import directionRoutes from './routes/directionRoutes.js';
+import groupRoutes from './routes/groupRoutes.js';
+import dashboardRoutes from './routes/dashboardRoutes.js';
+
+const app = express();
+
+app.use(helmet({ contentSecurityPolicy: false }));
+app.use(cors({ origin: config.frontendUrl, credentials: true }));
+app.use(express.json());
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+app.get('/api/health', (req, res) => {
+  res.json({ success: true, message: 'API is running' });
+});
+
+app.use('/api/auth', authRoutes);
+app.use('/api/students', studentRoutes);
+app.use('/api/teachers', teacherRoutes);
+app.use('/api/directions', directionRoutes);
+app.use('/api/groups', groupRoutes);
+app.use('/api/dashboard', dashboardRoutes);
+
+app.use(notFound);
+app.use(errorHandler);
+
+export default app;
