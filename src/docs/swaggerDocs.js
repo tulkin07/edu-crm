@@ -28,6 +28,9 @@
  *         application/json:
  *           schema:
  *             $ref: '#/components/schemas/LoginRequest'
+ *           example:
+ *             username: admin
+ *             password: Admin123!
  *     responses:
  *       200:
  *         description: Login successful
@@ -73,25 +76,34 @@
  *         schema: { type: integer }
  *       - in: query
  *         name: status
- *         schema: { type: string }
+ *         schema: { type: string, enum: [ACTIVE, INACTIVE, GRADUATED] }
  *       - in: query
  *         name: page
- *         schema: { type: integer }
+ *         schema: { type: integer, example: 1 }
  *       - in: query
  *         name: limit
- *         schema: { type: integer }
+ *         schema: { type: integer, example: 10 }
  *     responses:
  *       200:
  *         description: Paginated students list
  *   post:
  *     summary: Create student
+ *     description: Required fields - fullName, phone, birthDate, gender, directionId, level. Optional - status.
  *     tags: [Students]
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/Student'
+ *             $ref: '#/components/schemas/CreateStudentRequest'
+ *           example:
+ *             fullName: Ali Karimov
+ *             phone: "+998901234567"
+ *             birthDate: "2005-03-15"
+ *             gender: MALE
+ *             directionId: 1
+ *             level: BEGINNER
+ *             status: ACTIVE
  *     responses:
  *       201:
  *         description: Student created
@@ -113,12 +125,27 @@
  *         description: Student details
  *   patch:
  *     summary: Update student
+ *     description: Send only the fields you want to update.
  *     tags: [Students]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateStudentRequest'
+ *           example:
+ *             fullName: Ali Karimov
+ *             phone: "+998901234567"
+ *             birthDate: "2005-03-15"
+ *             gender: MALE
+ *             directionId: 1
+ *             level: INTERMEDIATE
+ *             status: ACTIVE
  *     responses:
  *       200:
  *         description: Student updated
@@ -141,12 +168,35 @@
  *   get:
  *     summary: List teachers
  *     tags: [Teachers]
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema: { type: string }
+ *       - in: query
+ *         name: page
+ *         schema: { type: integer, example: 1 }
+ *       - in: query
+ *         name: limit
+ *         schema: { type: integer, example: 10 }
  *     responses:
  *       200:
  *         description: Teachers list
  *   post:
  *     summary: Create teacher
+ *     description: Required fields - fullName, phone, directionId, experience. Optional - status.
  *     tags: [Teachers]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateTeacherRequest'
+ *           example:
+ *             fullName: John Smith
+ *             phone: "+998901234567"
+ *             directionId: 1
+ *             experience: 5
+ *             status: ACTIVE
  *     responses:
  *       201:
  *         description: Teacher created
@@ -168,12 +218,25 @@
  *         description: Teacher details
  *   patch:
  *     summary: Update teacher
+ *     description: Send only the fields you want to update.
  *     tags: [Teachers]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateTeacherRequest'
+ *           example:
+ *             fullName: John Smith
+ *             phone: "+998901234567"
+ *             directionId: 1
+ *             experience: 6
+ *             status: ACTIVE
  *     responses:
  *       200:
  *         description: Teacher updated
@@ -201,7 +264,18 @@
  *         description: Directions list
  *   post:
  *     summary: Create direction
+ *     description: Required field - name. Optional - description, status.
  *     tags: [Directions]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateDirectionRequest'
+ *           example:
+ *             name: Frontend
+ *             description: Web frontend development courses
+ *             status: ACTIVE
  *     responses:
  *       201:
  *         description: Direction created
@@ -223,12 +297,23 @@
  *         description: Direction details
  *   patch:
  *     summary: Update direction
+ *     description: Send only the fields you want to update.
  *     tags: [Directions]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateDirectionRequest'
+ *           example:
+ *             name: Frontend
+ *             description: Web frontend development courses
+ *             status: ACTIVE
  *     responses:
  *       200:
  *         description: Direction updated
@@ -256,7 +341,22 @@
  *         description: Groups list
  *   post:
  *     summary: Create group
+ *     description: Required fields - name, directionId, teacherId, startDate, lessonDays, startTime. Optional - status.
  *     tags: [Groups]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateGroupRequest'
+ *           example:
+ *             name: Frontend Morning A
+ *             directionId: 1
+ *             teacherId: 1
+ *             startDate: "2025-01-15"
+ *             lessonDays: [MONDAY, WEDNESDAY, FRIDAY]
+ *             startTime: "09:00"
+ *             status: ACTIVE
  *     responses:
  *       201:
  *         description: Group created
@@ -278,12 +378,27 @@
  *         description: Group details
  *   patch:
  *     summary: Update group
+ *     description: Send only the fields you want to update.
  *     tags: [Groups]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema: { type: integer }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/CreateGroupRequest'
+ *           example:
+ *             name: Frontend Morning A
+ *             directionId: 1
+ *             teacherId: 1
+ *             startDate: "2025-01-15"
+ *             lessonDays: [MONDAY, WEDNESDAY, FRIDAY]
+ *             startTime: "09:00"
+ *             status: ACTIVE
  *     responses:
  *       200:
  *         description: Group updated
@@ -305,21 +420,22 @@
  * /api/groups/{id}/students:
  *   post:
  *     summary: Add student to group
+ *     description: Send the student ID to add that student to the group.
  *     tags: [Groups]
  *     parameters:
  *       - in: path
  *         name: id
  *         required: true
  *         schema: { type: integer }
+ *         description: Group ID
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               studentId:
- *                 type: integer
+ *             $ref: '#/components/schemas/AddStudentToGroupRequest'
+ *           example:
+ *             studentId: 1
  *     responses:
  *       200:
  *         description: Student added
