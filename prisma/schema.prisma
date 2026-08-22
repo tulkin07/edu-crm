@@ -64,6 +64,9 @@ model User {
   username  String   @unique
   password  String
   role      Role
+  fullName  String?
+  email     String?  @unique
+  img       String?
   studentId Int?     @unique
   teacherId Int?     @unique
   createdAt DateTime @default(now())

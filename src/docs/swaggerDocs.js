@@ -45,6 +45,23 @@
  *     responses:
  *       200:
  *         description: User profile
+ *   patch:
+ *     summary: Update current user profile
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             $ref: '#/components/schemas/UpdateMeRequest'
+ *           encoding:
+ *             img:
+ *               contentType: image/jpeg, image/png, image/webp, image/gif
+ *     responses:
+ *       200:
+ *         description: Profile updated
+ *       409:
+ *         description: Email already in use
  */
 
 /**

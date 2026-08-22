@@ -27,6 +27,14 @@ const options = {
             password: { type: 'string', example: 'Admin123!' },
           },
         },
+        UpdateMeRequest: {
+          type: 'object',
+          properties: {
+            fullName: { type: 'string', example: 'John Doe' },
+            email: { type: 'string', format: 'email', example: 'john@example.com' },
+            img: { type: 'string', format: 'binary', description: 'Profile image (max 5MB)' },
+          },
+        },
         SuccessResponse: {
           type: 'object',
           properties: {

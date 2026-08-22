@@ -30,6 +30,19 @@ export const loginSchema = z.object({
   password: z.string().min(1, 'Password is required'),
 });
 
+export const updateMeSchema = z
+  .object({
+    fullName: z.string().min(2, 'Full name must be at least 2 characters').optional(),
+    email: z.preprocess(
+      (val) => (val === '' ? null : val),
+      z.string().email('Invalid email').optional().nullable()
+    ),
+    img: z.string().optional(),
+  })
+  .refine((data) => Object.keys(data).length > 0, {
+    message: 'At least one field is required',
+  });
+
 export const studentSchema = z.object({
   fullName: z.string().min(2, 'Full name must be at least 2 characters'),
   phone: phoneSchema,
